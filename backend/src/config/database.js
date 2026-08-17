@@ -1,7 +1,13 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import dns from "dns";
 
-dotenv.config()
+dotenv.config();
+
+dns.setServers([
+  "8.8.8.8",
+  "1.1.1.1"
+]);
 
 const connectToDB = async () =>{
     const mongoUri = process.env.MONGO_URI;
