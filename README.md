@@ -1,21 +1,3 @@
-<<<<<<< HEAD
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-=======
 # UPTOSKILL – Internship Management Portal
 ## MERN Stack Architecture & Development Documentation
 
@@ -346,4 +328,3 @@ Since certificates are official documents, keep these guardrails non-negotiable:
 - **Validate before render.** Every factual field the AI outputs (names, dates, codes, department) must be checked against the original JSON payload it was given. Mismatches get flagged to HR, never silently rendered.
 - **Log everything.** Store the exact JSON input, the prompt version used, and the AI's raw output in `aiLogs` for every certificate — this is your audit trail if a certificate is ever disputed.
 - **Deterministic settings.** Use a low temperature (e.g., 0–0.3) for the LLM call so wording stays consistent and predictable across similar requests, rather than creative/variable.
->>>>>>> origin/main
