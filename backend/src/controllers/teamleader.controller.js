@@ -29,7 +29,7 @@ export async function createIntern(req, res) {
 			password: internCode,
 			internshipDetails: {
 				teamleaderEmail: teamLeader.email,
-				status: 'upcoming',
+				status: 'ongoing',
 				createdBy: teamLeader._id,
 			},
 		});
@@ -37,6 +37,24 @@ export async function createIntern(req, res) {
 		return res.status(201).json({
 			message: 'Intern created successfully',
 			user: { id: user._id, email: user.email },
+		});
+	} catch (error) {
+		return res.status(500).json({ message: 'internal server error' });
+	}
+}
+
+export async function getInternsForTL(req, res) {
+	try {
+		const interns = await User.find({
+			role: 'intern',
+			'internshipDetails.teamleaderEmail': req.user.email.toLowerCase(),
+		})
+			.select('-password')
+			.sort({ createdAt: -1 });
+
+		return res.status(200).json({
+			message: 'Interns fetched successfully',
+			interns,
 		});
 	} catch (error) {
 		return res.status(500).json({ message: 'internal server error' });

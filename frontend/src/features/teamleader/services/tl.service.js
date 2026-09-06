@@ -11,6 +11,11 @@ export const getRequestsForReview = async () => {
   return response.data;
 };
 
+export const getMyInterns = async () => {
+  const response = await tlApi.get('/interns');
+  return response.data;
+};
+
 export const reviewRequest = async (id, action, rejectionReason) => {
   const payload = action === 'reject' ? { action, rejectionReason } : { action };
   const response = await tlApi.patch(`/requests/${id}/review`, payload);
