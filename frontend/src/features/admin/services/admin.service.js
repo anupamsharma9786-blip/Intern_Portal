@@ -22,6 +22,8 @@ const request = async (method, url, payload) => {
 
 export const createIntern = (payload) => request('post', '/api/admin/create-intern', payload);
 export const createTeamLeader = (payload) => request('post', '/api/admin/create-tl', payload);
+export const getAllTeamLeaders = () => request('get', '/api/admin/teamleaders');
+export const getInternsByTeamLeader = (id) => request('get', `/api/admin/teamleaders/${id}/interns`);
 export const getForwardedRequests = () => request('get', '/api/admin/forwarded-requests');
 export const finalizeRequest = (id, action, rejectionReason) => request(
   'patch',

@@ -1,6 +1,6 @@
 import express from 'express';
 import { registerValidator, teamLeaderValidator } from "../validators/auth.validator.js";
-import { createIntern, createTeamLeader, getForwardedRequests, finalizeRequest } from "../controllers/admin.controller.js";
+import { createIntern, createTeamLeader, getAllTeamLeaders, getInternsByTeamLeader, getForwardedRequests, finalizeRequest } from "../controllers/admin.controller.js";
 import verifyAuth from "../middlewares/verifyAuth.js";
 import requireAdmin from "../middlewares/requireAdmin.js";
 
@@ -12,6 +12,10 @@ adminRouter.post("/create-intern", verifyAuth, requireAdmin, registerValidator, 
 
 // POST api/auth/register-tl
 adminRouter.post("/create-tl", verifyAuth, requireAdmin, teamLeaderValidator, createTeamLeader);
+
+adminRouter.get("/teamleaders", verifyAuth, requireAdmin, getAllTeamLeaders);
+
+adminRouter.get("/teamleaders/:id/interns", verifyAuth, requireAdmin, getInternsByTeamLeader);
 
 adminRouter.get("/forwarded-requests", verifyAuth, requireAdmin, getForwardedRequests);
 

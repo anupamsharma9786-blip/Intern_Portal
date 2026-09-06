@@ -4,6 +4,7 @@ import { useAuth } from '../../auth/hooks/useAuth';
 import CreateIntern from '../components/CreateIntern';
 import CreateTl from '../components/CreateTl';
 import ForwardedRequestsList from '../components/ForwardedRequestsList';
+import TeamLeadersSection from '../components/TeamLeadersSection';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -53,15 +54,18 @@ const AdminDashboard = () => {
         </header>
 
         {activeView === 'overview' ? (
-          <section className="admin-profile-card" aria-label="Administrator profile">
-            <div className="admin-profile-heading"><div className="admin-profile-avatar">{initials}</div><div><p className="admin-eyebrow">YOUR PROFILE</p><h2>{user?.fullName || 'Administrator'}</h2><p>{user?.email || 'Loading profile...'}</p></div></div>
-            <div className="admin-profile-details">
-              <div><span>Role</span><strong>{user?.role || 'admin'}</strong></div>
-              <div><span>Mobile number</span><strong>{user?.mobileNo || 'Not provided'}</strong></div>
-              <div><span>Member since</span><strong>{user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</strong></div>
-            </div>
-            <div className="admin-quick-actions"><button onClick={() => setActiveView('intern')}><span>＋</span><strong>Create Intern</strong><small>Register a new intern account</small></button><button onClick={() => setActiveView('teamleader')}><span>♙</span><strong>Create Team Leader</strong><small>Add a team leader to the portal</small></button></div>
-          </section>
+          <>
+            <section className="admin-profile-card" aria-label="Administrator profile">
+              <div className="admin-profile-heading"><div className="admin-profile-avatar">{initials}</div><div><p className="admin-eyebrow">YOUR PROFILE</p><h2>{user?.fullName || 'Administrator'}</h2><p>{user?.email || 'Loading profile...'}</p></div></div>
+              <div className="admin-profile-details">
+                <div><span>Role</span><strong>{user?.role || 'admin'}</strong></div>
+                <div><span>Mobile number</span><strong>{user?.mobileNo || 'Not provided'}</strong></div>
+                <div><span>Member since</span><strong>{user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}</strong></div>
+              </div>
+              <div className="admin-quick-actions"><button onClick={() => setActiveView('intern')}><span>＋</span><strong>Create Intern</strong><small>Register a new intern account</small></button><button onClick={() => setActiveView('teamleader')}><span>♙</span><strong>Create Team Leader</strong><small>Add a team leader to the portal</small></button></div>
+            </section>
+            <TeamLeadersSection />
+          </>
         ) : activeView === 'intern' ? <CreateIntern /> : activeView === 'teamleader' ? <CreateTl /> : <ForwardedRequestsList />}
       </main>
     </div>

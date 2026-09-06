@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
 import CreateIntern from '../components/CreateIntern';
+import MyInternsList from '../components/MyInternsList';
 import PendingReviewList from '../components/PendingReviewList';
 import './TLDashboard.css';
 
@@ -38,6 +39,7 @@ const TLDashboard = () => {
         <nav className="admin-sidebar-nav">
           <button className={`admin-nav-item ${activeView === 'overview' ? 'active' : ''}`} onClick={() => setActiveView('overview')}><span>▦</span> Overview</button>
           <button className={`admin-nav-item ${activeView === 'requests' ? 'active' : ''}`} onClick={() => setActiveView('requests')}><span>▤</span> Certificate Requests</button>
+          <button className={`admin-nav-item ${activeView === 'myInterns' ? 'active' : ''}`} onClick={() => setActiveView('myInterns')}><span>♙</span> My Interns</button>
           <button className={`admin-nav-item ${activeView === 'intern' ? 'active' : ''}`} onClick={() => setActiveView('intern')}><span>＋</span> Create Intern</button>
         </nav>
         <div className="admin-sidebar-note"><span>●</span> Team leader access enabled</div>
@@ -46,8 +48,8 @@ const TLDashboard = () => {
       <main className="admin-dashboard-main">
         <header className="admin-page-header">
           <p className="admin-eyebrow">TEAM LEADER</p>
-          <h1>{activeView === 'overview' ? 'Welcome back' : activeView === 'requests' ? 'Certificate requests' : 'Create an intern'}</h1>
-          <p>{activeView === 'overview' ? 'Manage your team from one secure workspace.' : activeView === 'requests' ? 'Review intern requests waiting for your decision.' : 'Complete the details below to create an intern account.'}</p>
+          <h1>{activeView === 'overview' ? 'Welcome back' : activeView === 'requests' ? 'Certificate requests' : activeView === 'myInterns' ? 'My interns' : 'Create an intern'}</h1>
+          <p>{activeView === 'overview' ? 'Manage your team from one secure workspace.' : activeView === 'requests' ? 'Review intern requests waiting for your decision.' : activeView === 'myInterns' ? 'View the interns assigned to your team.' : 'Complete the details below to create an intern account.'}</p>
         </header>
 
         {activeView === 'overview' ? (
@@ -60,7 +62,7 @@ const TLDashboard = () => {
             </div>
             <div className="admin-quick-actions"><button onClick={() => setActiveView('intern')}><span>＋</span><strong>Create Intern</strong><small>Register an intern for your team</small></button></div>
           </section>
-        ) : activeView === 'requests' ? <PendingReviewList /> : <div className="teamleader-form-grid"><CreateIntern /></div>}
+        ) : activeView === 'requests' ? <PendingReviewList /> : activeView === 'myInterns' ? <MyInternsList /> : <div className="teamleader-form-grid"><CreateIntern /></div>}
       </main>
     </div>
   );

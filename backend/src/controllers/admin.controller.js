@@ -120,6 +120,47 @@ export async function createTeamLeader(req, res) {
     }
 }
 
+export async function getAllTeamLeaders(req, res) {
+    try {
+        const teamLeaders = await User.find({ role: 'teamleader' })
+            .select('fullName email mobileNo')
+            .sort({ fullName: 1 });
+
+        return res.status(200).json({ teamLeaders });
+    } catch (err) {
+        return res.status(500).json({ message: 'Server error', error: err.message });
+    }
+}
+
+export async function getInternsByTeamLeader(req, res) {
+    try {
+        const teamLeader = await User.findOne({
+            _id: req.params.id,
+            role: 'teamleader'
+        }).select('fullName email');
+
+        if (!teamLeader) {
+            return res.status(404).json({ message: 'Team leader not found' });
+        }
+
+        const interns = await User.find({
+            role: 'intern',
+            'internshipDetails.teamleaderEmail': teamLeader.email.toLowerCase()
+        })
+            .select('fullName email internCode domain startDate endDate internshipDetails.status');
+
+        return res.status(200).json({
+            teamLeader: {
+                fullName: teamLeader.fullName,
+                email: teamLeader.email
+            },
+            interns
+        });
+    } catch (err) {
+        return res.status(500).json({ message: 'Server error', error: err.message });
+    }
+}
+
 
 // Admin only sees requests TL has already forwarded
 export const getForwardedRequests = async (req, res) => {
