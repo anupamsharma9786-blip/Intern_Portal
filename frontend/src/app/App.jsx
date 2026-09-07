@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Login from '../features/auth/pages/Login';
+import ForgotPasswordPage from '../features/auth/pages/ForgotPasswordPage';
+import ResetPasswordPage from '../features/auth/pages/ResetPasswordPage';
 import ProtectedRoute from '../features/shared/components/ProtectedRoute';
 import InternDashboard from '../features/intern/pages/InternDashboard';
 import TLDashboard from '../features/teamleader/pages/TLDashboard';
@@ -28,6 +30,8 @@ export default function App() {
 
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
 
 
         <Route element={<ProtectedRoute allowedRoles={['intern']} />}>
