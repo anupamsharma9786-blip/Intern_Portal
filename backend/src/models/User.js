@@ -45,6 +45,14 @@ const userSchema = new mongoose.Schema(
             }
         },
 
+        resetPasswordToken: {
+            type: String
+        },
+
+        resetPasswordExpires: {
+            type: Date
+        },
+
         role: {
             type: String,
             enum: ["admin", "intern", "teamleader"],
@@ -85,7 +93,9 @@ userSchema.pre("save", async function (next) {
     }
 
     // Never store a plain-text password or intern code.
-    this.password = await bcrypt.hash(this.password, 10);
+    if (!/^\$2[aby]\$\d{2}\$/.test(this.password)) {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
     next;
 });
 
