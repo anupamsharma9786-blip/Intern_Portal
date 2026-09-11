@@ -13,6 +13,8 @@
 .forwarded-request-reason { max-width: 600px; color: var(--muted); line-height: 1.4; }
 .forwarded-request-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; min-width: 170px; }
 .forwarded-request-actions button { padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: transparent; font-size: 12px; font-weight: 800; cursor: pointer; }
+.forwarded-request-actions .forwarded-review-button { border-color: var(--accent); color: var(--accent); }
+.forwarded-request-actions .forwarded-review-button:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); }
 .forwarded-request-actions .forwarded-approve-button { border-color: var(--success); color: var(--success); }
 .forwarded-request-actions .forwarded-reject-button { border-color: var(--error); color: var(--error); }
 .forwarded-request-actions button:disabled { opacity: .6; cursor: not-allowed; }

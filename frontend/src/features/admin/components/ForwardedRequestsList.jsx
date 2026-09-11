@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useForwardedRequests from '../hooks/useForwardedRequests';
 import './ForwardedRequestsList.css';
 
 const formatDate = (date) => date ? new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '—';
 
 export default function ForwardedRequestsList() {
+  const navigate = useNavigate();
   const { requests, loading, error, refetch, approveRequest, rejectRequest } = useForwardedRequests();
   const [rejectingId, setRejectingId] = useState(null);
   const [reason, setReason] = useState('');
@@ -40,7 +42,7 @@ export default function ForwardedRequestsList() {
         const intern = request.userId || {};
         return <article className="forwarded-request-row" key={id}>
           <div className="forwarded-request-details"><h3>{intern.fullName || 'Unknown intern'}</h3><p className="forwarded-request-meta">{intern.internCode || '—'} · {intern.domain || '—'} · {formatDate(request.requestedAt || request.createdAt)}</p><p><strong>{request.certificateType?.replaceAll('_', ' ') || '—'}</strong></p><p className="forwarded-request-reason">{request.reason || 'No reason provided'}</p></div>
-          <div className="forwarded-request-actions">{rejectingId === id ? <div className="forwarded-reject-form"><input value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Rejection reason" aria-label="Rejection reason" autoFocus /><button type="button" onClick={() => reject(id)} disabled={!reason.trim()}>Confirm Reject</button><button type="button" onClick={() => { setRejectingId(null); setReason(''); }}>Cancel</button></div> : <><button type="button" className="forwarded-approve-button" onClick={() => approve(id)}>Approve</button><button type="button" className="forwarded-reject-button" onClick={() => setRejectingId(id)}>Reject</button></>}</div>
+          <div className="forwarded-request-actions">{rejectingId === id ? <div className="forwarded-reject-form"><input value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Rejection reason" aria-label="Rejection reason" autoFocus /><button type="button" onClick={() => reject(id)} disabled={!reason.trim()}>Confirm Reject</button><button type="button" onClick={() => { setRejectingId(null); setReason(''); }}>Cancel</button></div> : <><button type="button" className="forwarded-review-button" onClick={() => navigate(`/admin/certificates/${id}/review`)} title="Review certificate HTML and template">Review</button><button type="button" className="forwarded-approve-button" onClick={() => approve(id)}>Approve</button><button type="button" className="forwarded-reject-button" onClick={() => setRejectingId(id)}>Reject</button></>}</div>
         </article>;
       })}</div>}
     </section>
