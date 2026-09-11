@@ -9,7 +9,10 @@ import {
   finalizeRequest,
   getCertificateDraft,
   updateCertificateDraft,
-  finalizeCertificate
+  finalizeCertificate,
+  getAllCertificates,
+  retryCertificateGeneration,
+  downloadCertificatePdf
 } from "../controllers/admin.controller.js";
 import verifyAuth from "../middlewares/verifyAuth.js";
 import requireAdmin from "../middlewares/requireAdmin.js";
@@ -37,5 +40,10 @@ adminRouter.patch("/certificates/:id", verifyAuth, requireAdmin, updateCertifica
 
 // Day 4 Certificate Finalization & Email Delivery route
 adminRouter.post("/certificates/:id/finalize", verifyAuth, requireAdmin, finalizeCertificate);
+
+// Day 5 Admin Overview, Download & Retry Generation routes
+adminRouter.get("/certificates", verifyAuth, requireAdmin, getAllCertificates);
+adminRouter.get("/certificates/:id/download", verifyAuth, requireAdmin, downloadCertificatePdf);
+adminRouter.post("/requests/:id/retry-generation", verifyAuth, requireAdmin, retryCertificateGeneration);
 
 export default adminRouter;
