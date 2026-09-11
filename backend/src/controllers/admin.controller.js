@@ -307,7 +307,7 @@ export const getAllCertificates = async (req, res) => {
 
     return res.status(200).json({ certificates });
   } catch (err) {
-    return res.status(500).json({ message: 'Server error', error: err.message });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -357,7 +357,7 @@ export const retryCertificateGeneration = async (req, res) => {
     });
   } catch (err) {
     const status = err.statusCode || 500;
-    return res.status(status).json({ message: err.message || 'Server error', error: err.message });
+    return res.status(status).json({ message: err.statusCode ? err.message : 'Internal server error' });
   }
 };
 
@@ -393,6 +393,6 @@ export const downloadCertificatePdf = async (req, res) => {
 
     return res.download(absolutePath, safeFileName);
   } catch (err) {
-    return res.status(500).json({ message: 'Server error', error: err.message });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

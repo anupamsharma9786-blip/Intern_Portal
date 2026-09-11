@@ -81,16 +81,31 @@ export const createCertificateDraft = async (requestId) => {
   const certificateNumber = await generateCertificateNumber();
   const verificationCode = generateVerificationCode();
 
+  const formattedCertType = (request.certificateType || '').replace(/_/g, ' ');
+
   const templateData = {
     InternName: user.fullName || '',
+    internName: user.fullName || '',
+    fullName: user.fullName || '',
+    name: user.fullName || '',
     CertificateNumber: certificateNumber,
+    certificateNumber: certificateNumber,
     Department: user.domain || '',
+    department: user.domain || '',
+    domain: user.domain || '',
     StartDate: formatDate(user.startDate),
+    startDate: formatDate(user.startDate),
     EndDate: formatDate(user.endDate),
+    endDate: formatDate(user.endDate),
     IssueDate: formatDate(new Date()),
+    issueDate: formatDate(new Date()),
     InternCode: user.internCode || '',
-    CertificateType: request.certificateType || '',
-    VerificationCode: verificationCode
+    internCode: user.internCode || '',
+    CertificateType: formattedCertType,
+    certificateType: formattedCertType,
+    rawCertificateType: request.certificateType || '',
+    VerificationCode: verificationCode,
+    verificationCode: verificationCode
   };
 
   const compiledTemplate = Handlebars.compile(template.content);

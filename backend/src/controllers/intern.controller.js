@@ -153,7 +153,7 @@ export const getCertificateForRequest = async (req, res) => {
       }
     });
   } catch (err) {
-    return res.status(500).json({ message: 'Server error', error: err.message });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
@@ -211,7 +211,7 @@ export const downloadCertificateForRequest = async (req, res) => {
 
     return res.download(absolutePath, safeFileName);
   } catch (err) {
-    return res.status(500).json({ message: 'Server error', error: err.message });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };
 
