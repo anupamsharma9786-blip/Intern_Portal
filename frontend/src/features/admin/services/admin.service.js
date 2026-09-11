@@ -33,3 +33,21 @@ export const finalizeRequest = (id, action, rejectionReason) => request(
 export const getCertificateDraft = (id) => request('get', `/api/admin/certificates/${id}`);
 export const updateCertificateDraft = (id, htmlContent) => request('patch', `/api/admin/certificates/${id}`, { htmlContent });
 export const finalizeCertificate = (id) => request('post', `/api/admin/certificates/${id}/finalize`);
+
+// Day 5 Admin Overview & Retry Generation
+export const getAllCertificates = () => request('get', '/api/admin/certificates');
+export const retryCertificateGeneration = (id) => request('post', `/api/admin/requests/${id}/retry-generation`);
+export const downloadAdminCertificate = async (id, fileName) => {
+  const response = await adminApi.get(`/api/admin/certificates/${id}/download`, {
+    responseType: 'blob'
+  });
+  const blob = new Blob([response.data], { type: 'application/pdf' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', fileName || 'certificate.pdf');
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
