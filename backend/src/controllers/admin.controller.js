@@ -6,7 +6,9 @@ import CertificateRequest from '../models/CertificateRequest.js';
 import {
   createCertificateDraft,
   getCertificateDraft as fetchCertificateDraft,
-  updateCertificateDraft as modifyCertificateDraft
+  updateCertificateDraft as modifyCertificateDraft,
+  finalizeCertificate as finalizeCertificateService,
+  sendCertificateEmail
 } from '../services/certificate.service.js';
 
 dotenv.config()
@@ -236,5 +238,49 @@ export const updateCertificateDraft = async (req, res) => {
   } catch (err) {
     const status = err.statusCode || 500;
     res.status(status).json({ message: err.message || 'Server error' });
+  }
+};
+
+export const finalizeCertificate = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1. Finalize certificate and render PDF
+    const { certificate, request, absolutePdfPath } = await finalizeCertificateService(id);
+
+    // 2. Send email with PDF attachment
+    let emailSent = false;
+    let emailError = null;
+
+    try {
+      await sendCertificateEmail({
+        certificate,
+        absolutePdfPath,
+        user: certificate.userId
+      });
+      emailSent = true;
+    } catch (mailErr) {
+      emailError = mailErr.message || 'Email delivery failed';
+    }
+
+    if (emailError) {
+      return res.status(207).json({
+        message: 'Certificate finalized and PDF generated successfully, but email delivery could not be completed.',
+        certificate,
+        request,
+        emailSent: false,
+        emailError
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Certificate finalized, PDF generated, and email sent successfully.',
+      certificate,
+      request,
+      emailSent: true
+    });
+  } catch (err) {
+    const status = err.statusCode || 500;
+    return res.status(status).json({ message: err.message || 'Server error', error: err.message });
   }
 };

@@ -512,6 +512,65 @@
   }
 }
 
+.editor-finalize-btn {
+  padding: 9px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 800;
+  border: 1px solid #10b981;
+  background: #10b981;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.editor-finalize-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.editor-finalize-btn.is-finalizing {
+  opacity: 0.75;
+  cursor: wait;
+}
+
+.editor-finalize-btn:disabled,
+.editor-finalize-btn.is-disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--input) 80%, transparent);
+  border-color: var(--border);
+  transform: none;
+}
+
+.editor-finalize-btn.is-finalized {
+  background: color-mix(in srgb, #10b981 18%, transparent);
+  color: #10b981;
+  border-color: color-mix(in srgb, #10b981 35%, transparent);
+  opacity: 0.9;
+  cursor: default;
+}
+
+.review-badge-status.status-finalized {
+  color: #10b981;
+  background: color-mix(in srgb, #10b981 14%, transparent);
+  border-color: color-mix(in srgb, #10b981 30%, transparent);
+}
+
+.certificate-editor-textarea.is-finalized-textarea {
+  opacity: 0.85;
+  cursor: not-allowed;
+  background: color-mix(in srgb, var(--card) 60%, var(--input));
+}
+
+.certificate-review-toast-container {
+  margin-bottom: 20px;
+}
+
 .editor-stats-indicator {
   font-size: 11px;
   color: var(--muted);

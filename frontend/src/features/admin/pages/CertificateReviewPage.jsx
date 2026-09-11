@@ -3,14 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hooks/useAuth';
 import CertificatePreview from '../components/CertificatePreview';
 import useCertificateDraft from '../hooks/useCertificateDraft';
+import Toast from '../../../shared/components/Toast';
 import './CertificateReviewPage.css';
 
 /**
  * CertificateReviewPage
  *
- * Day 3 Certificate Engine Review Interface.
+ * Day 4 Certificate Engine Review & Finalization Interface.
  * Connects real certificate draft fetching, live HTML editing,
- * iframe-based preview rendering, and draft persistence.
+ * iframe-based preview rendering, draft persistence, and
+ * final PDF generation + email delivery.
  */
 export default function CertificateReviewPage() {
   const { id } = useParams();
@@ -23,15 +25,21 @@ export default function CertificateReviewPage() {
     setHtmlContent,
     loading,
     saving,
+    finalizing,
     error,
     saveError,
     saveSuccess,
+    finalizeError,
+    finalizeSuccess,
     fetchDraft,
     saveDraft,
+    finalizeDraft,
     resetContent
   } = useCertificateDraft(id);
 
   const [copied, setCopied] = useState(false);
+
+  const isFinalized = draft?.status === 'finalized';
 
   const initials = (user?.fullName || 'Admin')
     .split(' ')
@@ -99,20 +107,47 @@ export default function CertificateReviewPage() {
           <div className="certificate-review-title-row">
             <div className="certificate-review-title-block">
               <p className="admin-eyebrow">CERTIFICATE DESK</p>
-              <h1>Review Certificate Draft</h1>
-              <p>Review and customize the certificate HTML. Saved changes persist directly to the certificate draft.</p>
+              <h1>{isFinalized ? 'Finalized Certificate' : 'Review Certificate Draft'}</h1>
+              <p>
+                {isFinalized
+                  ? 'This certificate has been finalized and locked. The official PDF has been generated.'
+                  : 'Review and customize the certificate HTML. Click "Finalize & Send" when ready to render the PDF and deliver via email.'}
+              </p>
             </div>
 
             <div className="certificate-review-status-tags">
-              <span className="review-badge-status">
+              <span className={`review-badge-status ${isFinalized ? 'status-finalized' : ''}`}>
                 {draft?.status ? draft.status.toUpperCase() : 'DRAFT'}
               </span>
               <span className="review-badge-draft">
-                {draft?.certificateType ? draft.certificateType.replace(/_/g, ' ') : 'Review Mode'}
+                {draft?.certificateType ? draft.certificateType.replace(/_/g, ' ') : 'Certificate'}
               </span>
             </div>
           </div>
         </div>
+
+        {/* Global Feedback Toasts */}
+        {finalizeSuccess && (
+          <div className="certificate-review-toast-container">
+            <Toast
+              type={finalizeSuccess.emailSent ? 'success' : 'info'}
+              message={
+                finalizeSuccess.emailSent
+                  ? '✓ Certificate finalized, PDF generated, and email sent to intern successfully!'
+                  : `✓ Certificate finalized & PDF generated. (Email notice: ${finalizeSuccess.emailError})`
+              }
+            />
+          </div>
+        )}
+
+        {finalizeError && (
+          <div className="certificate-review-toast-container">
+            <Toast
+              type="error"
+              message={finalizeError}
+            />
+          </div>
+        )}
 
         {/* Loading State */}
         {loading && (
@@ -157,10 +192,14 @@ export default function CertificateReviewPage() {
                   <span className="certificate-context-cert-num">
                     Certificate No: <code>{draft?.certificateNumber || 'Draft'}</code>
                   </span>
-                  <span className="certificate-context-tag">Active Draft</span>
+                  <span className="certificate-context-tag">
+                    {isFinalized ? 'Locked Document' : 'Active Draft'}
+                  </span>
                 </div>
                 <p className="certificate-context-desc">
-                  This certificate was compiled from the approved request and active template. You can customize the markup and styles below. Clicking "Save Draft" updates the database document.
+                  {isFinalized
+                    ? `This certificate is finalized. The rendered PDF is stored at: ${draft?.pdfPath || 'uploads/certificates'}.`
+                    : 'Customize markup and styles below. Save Draft preserves edits; Finalize & Send generates the official PDF and emails it to the intern.'}
                 </p>
               </div>
             </section>
@@ -187,20 +226,24 @@ export default function CertificateReviewPage() {
                     >
                       <span>{copied ? '✓ Copied' : '📋 Copy HTML'}</span>
                     </button>
-                    <button
-                      type="button"
-                      className="editor-action-btn"
-                      onClick={resetContent}
-                      title="Reset to last saved draft content"
-                    >
-                      <span>↺ Revert to Saved</span>
-                    </button>
+                    {!isFinalized && (
+                      <button
+                        type="button"
+                        className="editor-action-btn"
+                        onClick={resetContent}
+                        title="Reset to last saved draft content"
+                      >
+                        <span>↺ Revert to Saved</span>
+                      </button>
+                    )}
                   </div>
                 </header>
 
                 <div className="certificate-editor-body">
                   <p className="certificate-editor-instructions">
-                    Modify HTML markup or certificate details below. The preview updates in real-time.
+                    {isFinalized
+                      ? 'This certificate is finalized. Markup is in read-only mode.'
+                      : 'Modify HTML markup or certificate details below. The preview updates in real-time.'}
                   </p>
 
                   <div className="certificate-editor-field">
@@ -209,9 +252,11 @@ export default function CertificateReviewPage() {
                     </label>
                     <textarea
                       id="certificate-html-editor"
-                      className="certificate-editor-textarea"
+                      className={`certificate-editor-textarea ${isFinalized ? 'is-finalized-textarea' : ''}`}
                       value={htmlContent}
-                      onChange={(e) => setHtmlContent(e.target.value)}
+                      onChange={(e) => !isFinalized && setHtmlContent(e.target.value)}
+                      readOnly={isFinalized}
+                      disabled={isFinalized}
                       spellCheck={false}
                       autoCapitalize="off"
                       autoComplete="off"
@@ -224,14 +269,30 @@ export default function CertificateReviewPage() {
 
                 <footer className="certificate-editor-footer">
                   <div className="editor-save-wrapper">
+                    {/* Save Draft Button */}
                     <button
                       type="button"
                       className={`editor-save-btn ${saving ? 'is-saving' : ''}`}
                       onClick={saveDraft}
-                      disabled={saving || loading}
-                      title="Save modifications to the certificate draft"
+                      disabled={saving || loading || finalizing || isFinalized}
+                      title={isFinalized ? 'Certificate is finalized' : 'Save modifications to the certificate draft'}
                     >
                       {saving ? 'Saving...' : 'Save Draft'}
+                    </button>
+
+                    {/* Finalize & Send Button */}
+                    <button
+                      type="button"
+                      className={`editor-finalize-btn ${finalizing ? 'is-finalizing' : ''} ${isFinalized ? 'is-finalized' : ''}`}
+                      onClick={finalizeDraft}
+                      disabled={finalizing || saving || loading || isFinalized}
+                      title={
+                        isFinalized
+                          ? 'Certificate is already finalized'
+                          : 'Render PDF, finalize document, and send email to intern'
+                      }
+                    >
+                      {finalizing ? 'Finalizing & Sending...' : isFinalized ? '✓ Finalized' : 'Finalize & Send'}
                     </button>
 
                     {saveSuccess && (
