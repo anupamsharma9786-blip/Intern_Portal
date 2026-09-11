@@ -23,9 +23,10 @@ export default function useForwardedRequests() {
 
   const actOnRequest = useCallback(async (id, action, rejectionReason) => {
     try {
-      await finalizeRequest(id, action, rejectionReason);
+      const response = await finalizeRequest(id, action, rejectionReason);
       setRequests((current) => current.filter((request) => (request._id || request.id) !== id));
       refetch();
+      return response;
     } catch (requestError) {
       setError(getErrorMessage(requestError));
       throw new Error(getErrorMessage(requestError), { cause: requestError });

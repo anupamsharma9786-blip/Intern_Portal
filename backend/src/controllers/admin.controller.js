@@ -3,6 +3,11 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { generateInternCode } from "../utils/generateInternCode.js";
 import CertificateRequest from '../models/CertificateRequest.js';
+import {
+  createCertificateDraft,
+  getCertificateDraft as fetchCertificateDraft,
+  updateCertificateDraft as modifyCertificateDraft
+} from '../services/certificate.service.js';
 
 dotenv.config()
 
@@ -200,10 +205,36 @@ export const finalizeRequest = async (req, res) => {
     if (action === 'reject') request.rejectionReason = rejectionReason;
 
     await request.save();
-    res.json({ request });
 
-    // certificate generation trigger goes here later, once status === 'approved'
+    let certificate = null;
+    if (action === 'approve') {
+      certificate = await createCertificateDraft(request._id);
+    }
+
+    res.json({ request, certificate });
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    const status = err.statusCode || 500;
+    res.status(status).json({ message: err.message || 'Server error', error: err.message });
+  }
+};
+
+export const getCertificateDraft = async (req, res) => {
+  try {
+    const certificate = await fetchCertificateDraft(req.params.id);
+    res.status(200).json({ certificate });
+  } catch (err) {
+    const status = err.statusCode || 500;
+    res.status(status).json({ message: err.message || 'Server error' });
+  }
+};
+
+export const updateCertificateDraft = async (req, res) => {
+  try {
+    const { htmlContent } = req.body;
+    const certificate = await modifyCertificateDraft(req.params.id, htmlContent);
+    res.status(200).json({ message: 'Draft saved successfully', certificate });
+  } catch (err) {
+    const status = err.statusCode || 500;
+    res.status(status).json({ message: err.message || 'Server error' });
   }
 };

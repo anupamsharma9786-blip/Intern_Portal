@@ -1,6 +1,15 @@
 import express from 'express';
 import { registerValidator, teamLeaderValidator } from "../validators/auth.validator.js";
-import { createIntern, createTeamLeader, getAllTeamLeaders, getInternsByTeamLeader, getForwardedRequests, finalizeRequest } from "../controllers/admin.controller.js";
+import {
+  createIntern,
+  createTeamLeader,
+  getAllTeamLeaders,
+  getInternsByTeamLeader,
+  getForwardedRequests,
+  finalizeRequest,
+  getCertificateDraft,
+  updateCertificateDraft
+} from "../controllers/admin.controller.js";
 import verifyAuth from "../middlewares/verifyAuth.js";
 import requireAdmin from "../middlewares/requireAdmin.js";
 
@@ -20,5 +29,9 @@ adminRouter.get("/teamleaders/:id/interns", verifyAuth, requireAdmin, getInterns
 adminRouter.get("/forwarded-requests", verifyAuth, requireAdmin, getForwardedRequests);
 
 adminRouter.patch("/requests/:id/finalize", verifyAuth, requireAdmin, finalizeRequest);
+
+// Day 3 Certificate Draft Review routes
+adminRouter.get("/certificates/:id", verifyAuth, requireAdmin, getCertificateDraft);
+adminRouter.patch("/certificates/:id", verifyAuth, requireAdmin, updateCertificateDraft);
 
 export default adminRouter;

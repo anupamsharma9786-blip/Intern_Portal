@@ -209,13 +209,20 @@
   color: var(--text);
 }
 
-.certificate-context-id code {
+.certificate-context-id code,
+.certificate-context-cert-num code {
   font-family: 'Consolas', 'Courier New', monospace;
   background: color-mix(in srgb, var(--input) 90%, transparent);
   padding: 2px 6px;
   border-radius: 6px;
   border: 1px solid var(--border);
   color: var(--accent);
+}
+
+.certificate-context-cert-num {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
 }
 
 .certificate-context-tag {
@@ -234,6 +241,80 @@
   font-size: 13px;
   color: var(--muted);
   line-height: 1.5;
+}
+
+/* Loading and Error State Panels */
+.certificate-review-state-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 60px 24px;
+  background: color-mix(in srgb, var(--card) 94%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.certificate-review-state-panel.loading {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.certificate-review-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.certificate-review-state-panel.error {
+  flex-direction: column;
+  color: var(--text);
+  border-color: rgba(239, 68, 68, 0.3);
+  background: color-mix(in srgb, rgba(239, 68, 68, 0.08), var(--card));
+}
+
+.certificate-error-icon {
+  font-size: 32px;
+  color: #ef4444;
+}
+
+.certificate-error-content h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.certificate-error-content p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.certificate-retry-btn {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.certificate-retry-btn:hover {
+  opacity: 0.9;
 }
 
 /* Workspace Layout */
@@ -372,12 +453,25 @@
 }
 
 .editor-save-btn {
-  padding: 9px 18px;
+  padding: 9px 20px;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 800;
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.editor-save-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.editor-save-btn.is-saving {
+  opacity: 0.75;
+  cursor: wait;
 }
 
 .editor-save-btn:disabled,
@@ -387,14 +481,35 @@
   color: var(--muted);
   background: color-mix(in srgb, var(--input) 80%, transparent);
   border-color: var(--border);
+  transform: none;
 }
 
-.editor-save-note {
-  font-size: 11px;
-  color: var(--muted);
+.editor-save-feedback {
+  font-size: 12px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   gap: 5px;
+  animation: fadeIn 0.2s ease;
+}
+
+.editor-save-feedback.success {
+  color: #10b981;
+}
+
+.editor-save-feedback.error {
+  color: #ef4444;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .editor-stats-indicator {
