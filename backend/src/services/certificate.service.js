@@ -6,8 +6,13 @@ import CertificateTemplate from '../models/CertificateTemplate.js';
 
 const generateCertificateNumber = async () => {
   const year = new Date().getFullYear();
-  const count = await Certificate.countDocuments();
-  return `CERT-${year}-${String(count + 1).padStart(5, '0')}`;
+  let count = await Certificate.countDocuments();
+  let candidate = `CERT-${year}-${String(count + 1).padStart(5, '0')}`;
+  while (await Certificate.exists({ certificateNumber: candidate })) {
+    count += 1;
+    candidate = `CERT-${year}-${String(count + 1).padStart(5, '0')}`;
+  }
+  return candidate;
 };
 
 const generateVerificationCode = () => {
