@@ -50,3 +50,7 @@ export const createIntern = async (payload) => {
     throw new Error(validationMessage || data?.message || 'Unable to create intern.', { cause: error });
   }
 };
+export const getUpcomingCompletions = async () => {
+  const response = await tlApi.get('/upcoming-completions');
+  return response.data;
+};
